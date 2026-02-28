@@ -1,0 +1,321 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Smart Resume Analyzer</title>
+    <style>
+      body {
+        margin: 0;
+        font-family: "Inter", sans-serif;
+        background: #0f172a;
+        color: #e5e7eb;
+      }
+
+      .container {
+        max-width: 1100px;
+        margin: 3rem auto;
+        padding: 2rem;
+        background: #1e293b;
+        border-radius: 20px;
+        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.6);
+      }
+
+      header {
+        text-align: center;
+        margin-bottom: 2rem;
+      }
+      header h1 {
+        font-size: 3rem;
+        font-weight: 900;
+        background: linear-gradient(90deg, #f59e0b, #10b981);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin-bottom: 0.5rem;
+      }
+      header p {
+        font-size: 1rem;
+        color: #cbd5e1;
+      }
+
+      /* Form Layout */
+      form {
+        display: flex;
+        gap: 2rem;
+        flex-wrap: wrap;
+      }
+      .left,
+      .right {
+        flex: 1 1 400px;
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+      }
+
+      textarea,
+      input[type="text"],
+      input[type="file"] {
+        width: 100%;
+        padding: 14px 16px;
+        border-radius: 12px;
+        border: 1px solid #334155;
+        background: #0f172a;
+        color: #f1f5f9;
+        font-size: 1rem;
+        outline: none;
+        transition: border 0.2s;
+      }
+      textarea:focus,
+      input:focus {
+        border-color: #10b981;
+      }
+      input[type="file"] {
+        cursor: pointer;
+      }
+
+      .button-container {
+        display: flex;
+        gap: 1rem;
+        margin-top: 0.5rem;
+        flex-wrap: wrap;
+      }
+      button {
+        padding: 12px 22px;
+        border-radius: 12px;
+        border: none;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+      }
+      #analyzeBtn {
+        background: #2563eb;
+        color: #f3f4f6;
+      }
+      #analyzeBtn:hover {
+        background: #1d4ed8;
+        transform: translateY(-2px);
+      }
+      #loadDemoBtn {
+        background: #8b5cf6;
+        color: #f3f4f6;
+      }
+      #loadDemoBtn:hover {
+        background: #7c3aed;
+        transform: translateY(-2px);
+      }
+      #resetBtn {
+        background: #6b7280;
+        color: #f3f4f6;
+      }
+      #resetBtn:hover {
+        background: #4b5563;
+        transform: translateY(-2px);
+      }
+
+      /* Loader */
+      #loader {
+        display: none;
+        text-align: center;
+        margin: 2rem 0;
+      }
+      .spinner {
+        width: 60px;
+        height: 60px;
+        border: 6px solid rgba(255, 255, 255, 0.2);
+        border-top: 6px solid #10b981;
+        border-radius: 50%;
+        margin: 0 auto 1rem;
+        animation: spin 1s linear infinite;
+      }
+      @keyframes spin {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+
+      /* Results Cards */
+      #results {
+        margin-top: 2rem;
+        display: none;
+      }
+      .candidate-card {
+        background: #111827;
+        padding: 1rem 1.5rem;
+        border-radius: 16px;
+        margin-bottom: 1rem;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.5);
+        transition: transform 0.2s;
+      }
+      .candidate-card:hover {
+        transform: translateY(-3px);
+      }
+      .candidate-card h3 {
+        margin: 0 0 0.5rem;
+        color: #fbbf24;
+      }
+      .candidate-card p {
+        margin: 0.25rem 0;
+      }
+      span.skill-badge {
+        background: #10b98133;
+        color: #10b981;
+        padding: 3px 8px;
+        border-radius: 8px;
+        font-size: 0.75rem;
+        margin-right: 4px;
+        font-weight: 600;
+      }
+      span.missing-badge {
+        background: #ef444433;
+        color: #ef4444;
+        padding: 3px 8px;
+        border-radius: 8px;
+        font-size: 0.75rem;
+        margin-right: 4px;
+        font-weight: 600;
+      }
+
+      /* Responsive */
+      @media (max-width: 900px) {
+        form {
+          flex-direction: column;
+        }
+        .button-container {
+          justify-content: center;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <header>
+        <h1>Resume Ranker AI</h1>
+        <p>Smart Candidate Analysis & Semantic Matching</p>
+      </header>
+
+      <form id="uploadForm">
+        <div class="left">
+          <textarea
+            id="job_description"
+            rows="8"
+            placeholder="Paste job description here..."
+          ></textarea>
+          <input
+            type="text"
+            id="skills"
+            placeholder="Required skills, comma separated"
+          />
+        </div>
+        <div class="right">
+          <label for="file" style="font-size: 0.9rem; color: #cbd5e1"
+            >Upload Resume CSV (resume.csv)</label
+          >
+          <input type="file" id="file" accept=".csv" />
+          <div class="button-container">
+            <button type="button" id="resetBtn">Reset</button>
+            <button type="button" id="loadDemoBtn">Load Demo</button>
+            <button type="submit" id="analyzeBtn">Analyze Now</button>
+          </div>
+        </div>
+      </form>
+
+      <div id="loader">
+        <div class="spinner"></div>
+        <p>AI is ranking resumes...</p>
+      </div>
+
+      <div id="results">
+        <h2>Top Candidates</h2>
+        <div id="resultsBody"></div>
+      </div>
+    </div>
+
+    <script>
+      const form = document.getElementById("uploadForm");
+      const loader = document.getElementById("loader");
+      const resultsDiv = document.getElementById("results");
+      const resultsBody = document.getElementById("resultsBody");
+      const loadDemoBtn = document.getElementById("loadDemoBtn");
+      const resetBtn = document.getElementById("resetBtn");
+
+      let isDemoMode = false;
+
+      loadDemoBtn.onclick = () => {
+        document.getElementById("job_description").value =
+          "Looking for a Data Analyst skilled in Python, SQL, and Data Visualization.";
+        document.getElementById("skills").value =
+          "python, sql, data visualization, pandas, numpy";
+        isDemoMode = true;
+      };
+
+      resetBtn.onclick = () => {
+        form.reset();
+        resultsDiv.style.display = "none";
+        resultsBody.innerHTML = "";
+        isDemoMode = false;
+      };
+
+      form.onsubmit = async (e) => {
+        e.preventDefault();
+        const file = document.getElementById("file").files[0];
+        const job_desc = document
+          .getElementById("job_description")
+          .value.trim();
+        const skills = document.getElementById("skills").value.trim();
+
+        if (!isDemoMode && !file) {
+          alert("Please upload Resume.csv or use demo.");
+          return;
+        }
+        if (!job_desc) {
+          alert("Please enter a job description.");
+          return;
+        }
+
+        loader.style.display = "block";
+        resultsDiv.style.display = "none";
+        resultsBody.innerHTML = "";
+
+        const formData = new FormData();
+        formData.append("job_description", job_desc);
+        formData.append("skills", skills);
+        if (!isDemoMode) formData.append("file", file);
+
+        try {
+          const res = await fetch("/rank", { method: "POST", body: formData });
+          if (!res.ok) throw new Error(`Server returned ${res.status}`);
+          const data = await res.json();
+
+          if (!data || data.length === 0)
+            throw new Error("No data returned from server.");
+
+          data.forEach((item) => {
+            const matched = item.matched_skills
+              .map((s) => `<span class="skill-badge">${s}</span>`)
+              .join("");
+            const missing = item.missing_skills
+              .map((s) => `<span class="missing-badge">${s}</span>`)
+              .join("");
+            resultsBody.innerHTML += `
+            <div class="candidate-card">
+                <h3>Rank ${item.rank}: Resume ${item.resume_id}</h3>
+                <p><strong>Score:</strong> ${(item.final_score * 100).toFixed(2)}%</p>
+                <p><strong>Matched Skills:</strong> ${matched}</p>
+                <p><strong>Missing Skills:</strong> ${missing || "<span class='skill-badge'>All Matched</span>"}</p>
+            </div>`;
+          });
+
+          resultsDiv.style.display = "block";
+        } catch (err) {
+          alert("Server connection failed: " + err.message);
+        } finally {
+          loader.style.display = "none";
+        }
+      };
+    </script>
+  </body>
+</html>
