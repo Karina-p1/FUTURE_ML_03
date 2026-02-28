@@ -78,8 +78,8 @@ Returns top 10 ranked candidates with:
 
 ## ⚙️ Installation
 ```bash
-git clone https://github.com/yourusername/repo-name.git
-cd repo-name
+git clone https://github.com/karina-p1/FUTURE_ML_03.git
+cd FUTURE_ML_03
 pip install -r requirements.txt
 uvicorn web_interface.app:app --reload
 # Open in browser: http://127.0.0.1:8000
