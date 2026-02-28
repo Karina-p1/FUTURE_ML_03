@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Smart Resume Analyzer</title>
     <style>
+      /* Fonts & Body */
+      @import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;600;900&display=swap");
       body {
         margin: 0;
         font-family: "Inter", sans-serif;
@@ -18,7 +20,8 @@
         padding: 2rem;
         background: #1e293b;
         border-radius: 20px;
-        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.6);
+        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
+        transition: transform 0.3s ease;
       }
 
       header {
@@ -63,11 +66,14 @@
         color: #f1f5f9;
         font-size: 1rem;
         outline: none;
-        transition: border 0.2s;
+        transition:
+          border 0.2s,
+          box-shadow 0.2s;
       }
       textarea:focus,
       input:focus {
         border-color: #10b981;
+        box-shadow: 0 0 10px #10b98133;
       }
       input[type="file"] {
         cursor: pointer;
@@ -78,6 +84,7 @@
         gap: 1rem;
         margin-top: 0.5rem;
         flex-wrap: wrap;
+        justify-content: flex-start;
       }
       button {
         padding: 12px 22px;
@@ -144,14 +151,17 @@
       }
       .candidate-card {
         background: #111827;
-        padding: 1rem 1.5rem;
+        padding: 1.5rem;
         border-radius: 16px;
         margin-bottom: 1rem;
-        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.5);
-        transition: transform 0.2s;
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
+        transition:
+          transform 0.2s,
+          box-shadow 0.2s;
       }
       .candidate-card:hover {
-        transform: translateY(-3px);
+        transform: translateY(-4px);
+        box-shadow: 0 12px 40px rgba(0, 0, 0, 0.6);
       }
       .candidate-card h3 {
         margin: 0 0 0.5rem;
@@ -160,23 +170,21 @@
       .candidate-card p {
         margin: 0.25rem 0;
       }
+      span.skill-badge,
+      span.missing-badge {
+        padding: 4px 10px;
+        border-radius: 8px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        margin-right: 6px;
+      }
       span.skill-badge {
         background: #10b98133;
         color: #10b981;
-        padding: 3px 8px;
-        border-radius: 8px;
-        font-size: 0.75rem;
-        margin-right: 4px;
-        font-weight: 600;
       }
       span.missing-badge {
         background: #ef444433;
         color: #ef4444;
-        padding: 3px 8px;
-        border-radius: 8px;
-        font-size: 0.75rem;
-        margin-right: 4px;
-        font-weight: 600;
       }
 
       /* Responsive */
@@ -188,13 +196,24 @@
           justify-content: center;
         }
       }
+      @media (max-width: 500px) {
+        header h1 {
+          font-size: 2rem;
+        }
+        header p {
+          font-size: 0.9rem;
+        }
+        button {
+          flex: 1 1 100%;
+        }
+      }
     </style>
   </head>
   <body>
     <div class="container">
       <header>
-        <h1>Resume Ranker AI</h1>
-        <p>Smart Candidate Analysis & Semantic Matching</p>
+        <h1>AI Resume Ranker</h1>
+        <p>Smart Candidate Analysis</p>
       </header>
 
       <form id="uploadForm">
@@ -301,12 +320,12 @@
               .map((s) => `<span class="missing-badge">${s}</span>`)
               .join("");
             resultsBody.innerHTML += `
-            <div class="candidate-card">
+              <div class="candidate-card">
                 <h3>Rank ${item.rank}: Resume ${item.resume_id}</h3>
                 <p><strong>Score:</strong> ${(item.final_score * 100).toFixed(2)}%</p>
                 <p><strong>Matched Skills:</strong> ${matched}</p>
                 <p><strong>Missing Skills:</strong> ${missing || "<span class='skill-badge'>All Matched</span>"}</p>
-            </div>`;
+              </div>`;
           });
 
           resultsDiv.style.display = "block";
